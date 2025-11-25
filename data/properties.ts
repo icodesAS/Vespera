@@ -15,7 +15,7 @@ export const properties: Property[] = [
     baths: 2,
     areaSqFt: 1180,
     areaSqft: 1180,
-    imageUrl: "https://picsum.photos/seed/prop1/800/600",
+    imageUrl: "/images/prop1.jpg",
   },
   {
     id: "2",
@@ -31,7 +31,7 @@ export const properties: Property[] = [
     baths: 3,
     areaSqFt: 1650,
     areaSqft: 1650,
-    imageUrl: "https://picsum.photos/seed/prop2/800/600",
+    imageUrl: "/images/prop2.jpg",
   },
   {
     id: "3",
@@ -47,7 +47,7 @@ export const properties: Property[] = [
     baths: 2,
     areaSqFt: 1025,
     areaSqft: 1025,
-    imageUrl: "https://picsum.photos/seed/prop3/800/600",
+    imageUrl: "/images/prop3.jpg",
   },
   {
     id: "4",
@@ -63,7 +63,7 @@ export const properties: Property[] = [
     baths: 1,
     areaSqFt: 880,
     areaSqft: 880,
-    imageUrl: "https://picsum.photos/seed/prop4/800/600",
+    imageUrl: "/images/prop4.jpg",
   },
   {
     id: "5",
@@ -79,7 +79,7 @@ export const properties: Property[] = [
     baths: 3,
     areaSqFt: 1720,
     areaSqft: 1720,
-    imageUrl: "https://picsum.photos/seed/prop5/800/600",
+    imageUrl: "/images/prop5.jpg",
   },
   {
     id: "6",
@@ -95,7 +95,7 @@ export const properties: Property[] = [
     baths: 4,
     areaSqFt: 2100,
     areaSqft: 2100,
-    imageUrl: "https://picsum.photos/seed/prop6/800/600",
+    imageUrl: "/images/prop6.jpg",
   },
   {
     id: "7",
@@ -111,7 +111,7 @@ export const properties: Property[] = [
     baths: 2,
     areaSqFt: 1285,
     areaSqft: 1285,
-    imageUrl: "https://picsum.photos/seed/prop7/800/600",
+    imageUrl: "/images/prop7.jpg",
   },
   {
     id: "8",
@@ -127,7 +127,7 @@ export const properties: Property[] = [
     baths: 2,
     areaSqFt: 1150,
     areaSqft: 1150,
-    imageUrl: "https://picsum.photos/seed/prop8/800/600",
+    imageUrl: "/images/prop8.jpg",
   },
   {
     id: "9",
@@ -143,7 +143,7 @@ export const properties: Property[] = [
     baths: 2,
     areaSqFt: 980,
     areaSqft: 980,
-    imageUrl: "https://picsum.photos/seed/prop9/800/600",
+    imageUrl: "/images/prop9.jpg",
   },
   {
     id: "10",
@@ -159,7 +159,7 @@ export const properties: Property[] = [
     baths: 2,
     areaSqFt: 1040,
     areaSqft: 1040,
-    imageUrl: "https://picsum.photos/seed/prop10/800/600",
+    imageUrl: "/images/prop10.jpg",
   },
   {
     id: "11",
@@ -175,7 +175,7 @@ export const properties: Property[] = [
     baths: 3,
     areaSqFt: 1580,
     areaSqft: 1580,
-    imageUrl: "https://picsum.photos/seed/prop11/800/600",
+    imageUrl: "/images/prop11.jpg",
   },
   {
     id: "12",
@@ -191,7 +191,7 @@ export const properties: Property[] = [
     baths: 3,
     areaSqFt: 1885,
     areaSqft: 1885,
-    imageUrl: "https://picsum.photos/seed/prop12/800/600",
+    imageUrl: "/images/prop12.jpg",
   },
   {
     id: "13",
@@ -207,7 +207,7 @@ export const properties: Property[] = [
     baths: 2,
     areaSqFt: 920,
     areaSqft: 920,
-    imageUrl: "https://picsum.photos/seed/prop13/800/600",
+    imageUrl: "/images/prop13.jpg",
   },
   {
     id: "14",
@@ -223,7 +223,7 @@ export const properties: Property[] = [
     baths: 4,
     areaSqFt: 2450,
     areaSqft: 2450,
-    imageUrl: "https://picsum.photos/seed/prop14/800/600",
+    imageUrl: "/images/prop14.jpg",
   },
   {
     id: "15",
@@ -239,7 +239,7 @@ export const properties: Property[] = [
     baths: 3,
     areaSqFt: 1620,
     areaSqft: 1620,
-    imageUrl: "https://picsum.photos/seed/prop15/800/600",
+    imageUrl: "/images/prop15.jpg",
   },
   {
     id: "16",
@@ -255,7 +255,7 @@ export const properties: Property[] = [
     baths: 1,
     areaSqFt: 740,
     areaSqft: 740,
-    imageUrl: "https://picsum.photos/seed/prop16/800/600",
+    imageUrl: "/images/prop16.jpg",
   },
   {
     id: "17",
@@ -271,7 +271,7 @@ export const properties: Property[] = [
     baths: 2,
     areaSqFt: 1105,
     areaSqft: 1105,
-    imageUrl: "https://picsum.photos/seed/prop17/800/600",
+    imageUrl: "/images/prop17.jpg",
   },
   {
     id: "18",
@@ -287,7 +287,7 @@ export const properties: Property[] = [
     baths: 3,
     areaSqFt: 1900,
     areaSqft: 1900,
-    imageUrl: "https://picsum.photos/seed/prop18/800/600",
+    imageUrl: "/images/prop18.jpg",
   },
   {
     id: "19",
@@ -303,7 +303,7 @@ export const properties: Property[] = [
     baths: 2,
     areaSqFt: 990,
     areaSqft: 990,
-    imageUrl: "https://picsum.photos/seed/prop19/800/600",
+    imageUrl: "/images/prop19.jpg",
   },
   {
     id: "20",
@@ -319,6 +319,6 @@ export const properties: Property[] = [
     baths: 2,
     areaSqFt: 1280,
     areaSqft: 1280,
-    imageUrl: "https://picsum.photos/seed/prop20/800/600",
+    imageUrl: "/images/prop20.jpg",
   },
 ];
