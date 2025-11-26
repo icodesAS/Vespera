@@ -9,6 +9,7 @@ import LikedPropertiesPanel from "@/components/LikedPropertiesPanel";
 import PropertyCard from "@/components/PropertyCard";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import type { Property } from "@/types/property";
 
 export default function HomePage() {
   const { user, loading: authLoading, logout } = useAuth();
@@ -18,16 +19,15 @@ export default function HomePage() {
     properties,
     currentIndex,
     likedIds,
-    lastAiPreferenceText,
     likeCurrent,
     skipCurrent,
     reset,
     setLikedIds,
-    setLastAiPreferenceText,
     setProperties,
+    movePropertyToTop,
+    removeFromLiked,
   } = usePropertyStore();
 
-  const [preferenceText, setPreferenceText] = useState(lastAiPreferenceText || "");
   const [aiReason, setAiReason] = useState<string | null>(null);
   const [isExplaining, setIsExplaining] = useState(false);
   const [explainError, setExplainError] = useState<string | null>(null);
@@ -52,10 +52,6 @@ export default function HomePage() {
             if (data.likedPropertyIds) {
               setLikedIds(data.likedPropertyIds);
             }
-            if (data.lastAiPreferenceText) {
-              setLastAiPreferenceText(data.lastAiPreferenceText);
-              setPreferenceText(data.lastAiPreferenceText);
-            }
           }
         } catch (error) {
           console.error("Failed to load user data:", error);
@@ -63,11 +59,11 @@ export default function HomePage() {
       };
       loadUserData();
     }
-  }, [user, setLikedIds, setLastAiPreferenceText]);
+  }, [user, setLikedIds]);
 
-  // Persist liked IDs and preference text to Firestore
+  // Persist liked IDs to Firestore
   const persistToFirestore = useCallback(
-    async (likedIds: string[], preferenceText?: string) => {
+    async (likedIds: string[]) => {
       if (!user || !db) return;
 
       try {
@@ -75,7 +71,6 @@ export default function HomePage() {
           doc(db, "users", user.uid),
           {
             likedPropertyIds: likedIds,
-            lastAiPreferenceText: preferenceText || null,
           },
           { merge: true }
         );
@@ -88,20 +83,21 @@ export default function HomePage() {
 
   // Handle swipe right (like)
   const handleSwipeRight = useCallback(() => {
-    if (isEndOfList) return;
-    const newPreferenceText = preferenceText.trim() || undefined;
-    likeCurrent(newPreferenceText);
-    setLastAiPreferenceText(newPreferenceText);
+    if (isEndOfList || !property) return;
+    
+    // Add to liked list first
+    const newLikedIds = likedIds.includes(property.id) 
+      ? likedIds 
+      : [...likedIds, property.id];
+    
+    setLikedIds(newLikedIds);
+    likeCurrent();
     setAiReason(null);
     setExplainError(null);
 
     // Persist to Firestore
-    const newLikedIds = [...likedIds];
-    if (property && !newLikedIds.includes(property.id)) {
-      newLikedIds.push(property.id);
-    }
-    persistToFirestore(newLikedIds, newPreferenceText);
-  }, [property, isEndOfList, preferenceText, likeCurrent, likedIds, setLastAiPreferenceText, persistToFirestore]);
+    persistToFirestore(newLikedIds);
+  }, [property, isEndOfList, likeCurrent, likedIds, setLikedIds, persistToFirestore]);
 
   // Handle swipe left (skip)
   const handleSwipeLeft = useCallback(() => {
@@ -123,36 +119,25 @@ export default function HomePage() {
         headers: {
           "Content-Type": "application/json",
         },
-        cache: "no-store",
         body: JSON.stringify({
           property,
-          preferenceText: preferenceText.trim() || undefined,
         }),
       });
 
-      const payload = (await response.json().catch(() => ({}))) as {
-        aiReason?: string;
-        error?: string;
-      };
-
       if (!response.ok) {
-        throw new Error(payload.error || "Failed to fetch AI reason");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP ${response.status}`);
       }
 
+      const payload = await response.json();
       setAiReason(payload.aiReason ?? "No explanation returned.");
-      
-      // Persist preference text if provided
-      if (preferenceText.trim() && user) {
-        setLastAiPreferenceText(preferenceText.trim());
-        persistToFirestore(likedIds, preferenceText.trim());
-      }
     } catch (error) {
-      console.error(error);
+      console.error("AI explanation error:", error);
       setExplainError("Could not fetch AI explanation. Please try again.");
     } finally {
       setIsExplaining(false);
     }
-  }, [property, preferenceText, isExplaining, user, likedIds, setLastAiPreferenceText, persistToFirestore]);
+  }, [property, isExplaining]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -181,19 +166,18 @@ export default function HomePage() {
         const response = await fetch("/api/ai/search", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          cache: "no-store",
           body: JSON.stringify({
             query: searchQuery,
             allProperties: properties,
           }),
         });
-        const payload = (await response.json().catch(() => ({}))) as {
-          properties?: typeof properties;
-          error?: string;
-        };
+        
         if (!response.ok) {
-          throw new Error(payload.error || "AI search failed");
+          throw new Error("AI search failed");
         }
+
+        const payload = await response.json();
+        
         if (!payload.properties?.length) {
           throw new Error("AI search returned no matches");
         }
@@ -203,7 +187,6 @@ export default function HomePage() {
         setVisibleCount(6);
         setAiReason(null);
         setExplainError(null);
-        setPreferenceText(lastAiPreferenceText || "");
       } catch (error) {
         console.error("AI search error:", error);
         setSearchError("AI search could not understand the request.");
@@ -211,7 +194,28 @@ export default function HomePage() {
         setIsSearching(false);
       }
     },
-    [searchQuery, properties, reset, setProperties, lastAiPreferenceText]
+    [searchQuery, properties, reset, setProperties]
+  );
+
+  // Handle property click from list or liked panel
+  const handlePropertyClick = useCallback(
+    (clickedProperty: Property) => {
+      movePropertyToTop(clickedProperty.id);
+      setAiReason(null);
+      setExplainError(null);
+    },
+    [movePropertyToTop]
+  );
+
+  // Handle remove from liked
+  const handleRemoveFromLiked = useCallback(
+    (propertyId: string) => {
+      const newLikedIds = likedIds.filter((id) => id !== propertyId);
+      setLikedIds(newLikedIds);
+      removeFromLiked(propertyId);
+      persistToFirestore(newLikedIds);
+    },
+    [likedIds, setLikedIds, removeFromLiked, persistToFirestore]
   );
 
   // Infinite scroll handler
@@ -245,29 +249,29 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
+      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-4 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
-            <p className="text-xs uppercase tracking-widest text-emerald-500">
-              PropSwipe
+            <p className="text-xs uppercase tracking-widest text-blue-600 font-bold">
+              🏠 PropSwipe
             </p>
-            <h1 className="text-xl font-bold text-slate-900">Swipe smarter, rent happier</h1>
+            <h1 className="text-2xl font-bold text-slate-900">Swipe smarter, rent happier</h1>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-sm text-gray-600">{user.email}</span>
             <button
               type="button"
               onClick={() => setShowLikedPanel(true)}
-              className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
+              className="rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2 text-sm font-semibold transition-all duration-200 hover:shadow-md"
             >
-              Liked ({likedIds.length})
+              ❤️ Liked ({likedIds.length})
             </button>
             <button
               type="button"
               onClick={logout}
-              className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
+              className="rounded-full border border-gray-300 hover:bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-all duration-200"
             >
               Logout
             </button>
@@ -275,7 +279,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
         {/* AI Search */}
         <form
           onSubmit={handleSearch}
@@ -286,36 +290,36 @@ export default function HomePage() {
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="Describe what you want: 'quiet 2BHK under 30k in Pune near metro'…"
-            className="flex-1 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm focus:border-slate-900 focus:outline-none"
+            className="flex-1 rounded-2xl border-2 border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder-gray-500 focus:border-slate-900 focus:outline-none transition-all duration-200"
           />
           <button
             type="submit"
             disabled={isSearching || !searchQuery.trim()}
-            className="rounded-2xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-2xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 transition-all duration-200"
           >
-            {isSearching ? "Searching…" : "AI Search"}
+            {isSearching ? "🔍 Searching…" : "🔍 AI Search"}
           </button>
         </form>
         {searchError && (
-          <p className="text-sm text-red-600">{searchError}</p>
+          <p className="text-sm text-red-600 bg-red-50 rounded-lg px-4 py-3">⚠️ {searchError}</p>
         )}
 
         {/* Main Swipe Card */}
         <div>
           {isEndOfList ? (
-            <div className="rounded-3xl border border-dashed border-gray-300 bg-white p-10 text-center shadow-sm max-w-md mx-auto">
-              <p className="text-lg font-semibold text-slate-900">
+            <div className="rounded-3xl border-2 border-dashed border-gray-300 bg-white p-10 text-center shadow-lg max-w-2xl mx-auto">
+              <p className="text-2xl font-bold text-slate-900">
                 You&apos;ve viewed all properties ✨
               </p>
-              <p className="text-sm text-gray-600 mt-2">
+              <p className="text-gray-600 mt-2 text-lg">
                 You&apos;ve reviewed every property. Restart to browse again.
               </p>
               <button
                 type="button"
                 onClick={reset}
-                className="mt-6 w-full rounded-full bg-slate-900 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                className="mt-6 rounded-full bg-slate-900 px-8 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
               >
-                Restart Browsing
+                🔄 Restart Browsing
               </button>
             </div>
           ) : (
@@ -324,8 +328,6 @@ export default function HomePage() {
               aiReason={aiReason}
               onSwipeRight={handleSwipeRight}
               onSwipeLeft={handleSwipeLeft}
-              preferenceText={preferenceText}
-              onPreferenceChange={setPreferenceText}
               onExplain={handleExplain}
               isExplaining={isExplaining}
               explainError={explainError}
@@ -334,20 +336,26 @@ export default function HomePage() {
         </div>
 
         {/* Infinite Scroll List */}
-        <div className="mt-12">
-          <h2 className="text-xl font-bold text-slate-900 mb-4">All Properties</h2>
+        <div className="mt-16 pt-8 border-t border-gray-200">
+          <h2 className="text-2xl font-bold text-slate-900 mb-6">📋 All Properties</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {properties.slice(0, visibleCount).map((prop) => (
-              <PropertyCard
+              <div
                 key={prop.id}
-                property={prop}
-                disableActions
-              />
+                onClick={() => handlePropertyClick(prop)}
+                className="cursor-pointer transform hover:scale-105 transition-transform duration-200"
+              >
+                <PropertyCard
+                  property={prop}
+                  disableActions
+                  onCardClick={() => handlePropertyClick(prop)}
+                />
+              </div>
             ))}
           </div>
           {visibleCount < properties.length && (
-            <p className="text-center text-sm text-gray-500 mt-4">
-              Scroll for more properties...
+            <p className="text-center text-sm text-gray-500 mt-8">
+              ⬇️ Scroll for more properties...
             </p>
           )}
         </div>
@@ -358,7 +366,9 @@ export default function HomePage() {
         <LikedPropertiesPanel
           likedProperties={likedProperties}
           onClose={() => setShowLikedPanel(false)}
-        />
+          onPropertyClick={handlePropertyClick}
+          onRemoveFromLiked={handleRemoveFromLiked}
+        /> 
       )}
     </main>
   );

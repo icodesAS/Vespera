@@ -7,15 +7,15 @@ interface PropertyStore {
   currentIndex: number;
   likedIds: string[];
   skippedIds: string[];
-  lastAiPreferenceText?: string;
 
   // Actions
-  likeCurrent: (preferenceText?: string) => void;
+  likeCurrent: () => void;
   skipCurrent: () => void;
   reset: () => void;
   setProperties: (properties: Property[]) => void;
   setLikedIds: (ids: string[]) => void;
-  setLastAiPreferenceText: (text?: string) => void;
+  movePropertyToTop: (propertyId: string) => void;
+  removeFromLiked: (propertyId: string) => void;
 }
 
 export const usePropertyStore = create<PropertyStore>((set) => ({
@@ -23,9 +23,8 @@ export const usePropertyStore = create<PropertyStore>((set) => ({
   currentIndex: 0,
   likedIds: [],
   skippedIds: [],
-  lastAiPreferenceText: undefined,
 
-  likeCurrent: (preferenceText) =>
+  likeCurrent: () =>
     set((state) => {
       const currentProperty = state.properties[state.currentIndex];
       if (!currentProperty) return state;
@@ -37,7 +36,6 @@ export const usePropertyStore = create<PropertyStore>((set) => ({
       return {
         likedIds: newLikedIds,
         currentIndex: state.currentIndex + 1,
-        lastAiPreferenceText: preferenceText ?? state.lastAiPreferenceText,
       };
     }),
 
@@ -59,13 +57,32 @@ export const usePropertyStore = create<PropertyStore>((set) => ({
   reset: () =>
     set({
       currentIndex: 0,
-      likedIds: [],
       skippedIds: [],
-      // Keep properties and lastAiPreferenceText intact
+      likedIds: [],
     }),
 
   setProperties: (properties) => set({ properties }),
   setLikedIds: (ids) => set({ likedIds: ids }),
-  setLastAiPreferenceText: (text) => set({ lastAiPreferenceText: text }),
-}));
 
+  movePropertyToTop: (propertyId: string) =>
+    set((state) => {
+      const propertyIndex = state.properties.findIndex((p) => p.id === propertyId);
+      if (propertyIndex === -1) return state;
+
+      const updatedProperties = state.properties.filter((p) => p.id !== propertyId);
+      const reorderedProperties = [state.properties[propertyIndex], ...updatedProperties];
+
+      return {
+        properties: reorderedProperties,
+        currentIndex: 0,
+        skippedIds: [],
+      };
+    }),
+
+  removeFromLiked: (propertyId: string) =>
+    set((state) => {
+      return {
+        likedIds: state.likedIds.filter((id) => id !== propertyId),
+      };
+    }),
+}));

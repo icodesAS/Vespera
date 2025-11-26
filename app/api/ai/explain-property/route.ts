@@ -13,7 +13,6 @@ export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as {
       property?: Property;
-      preferenceText?: string;
     };
 
     if (!body?.property) {
@@ -25,14 +24,11 @@ export async function POST(req: NextRequest) {
 
     const genAI = getGenAI();
 
-    const userPreferences = body.preferenceText
-      ? `User's specific preferences: ${body.preferenceText}\n\nGeneral preferences:\n${USER_PREFERENCES}`
-      : `User preferences:\n${USER_PREFERENCES}`;
-
     const prompt = `
 You are an AI real-estate assistant.
 
-${userPreferences}
+User preferences:
+${USER_PREFERENCES}
 
 Given this property, explain in 3–4 bullet points why it is or isn't a good match:
 
@@ -53,8 +49,8 @@ ${JSON.stringify(body.property, null, 2)}
     });
 
     const aiReason =
-      result.response?.text?.trim?.() ||
-      result.text?.trim?.() ||
+      result.response?.text?.trim() ||
+      result.text?.trim() ||
       "Looks like a solid match for your preferences.";
 
     return NextResponse.json({ aiReason });
