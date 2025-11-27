@@ -1,12 +1,15 @@
 import { create } from "zustand";
 import type { Property } from "@/types/property";
 import { properties as seedProperties } from "@/data/properties";
+import { collection, getDocs, query } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 interface PropertyStore {
   properties: Property[];
   currentIndex: number;
   likedIds: string[];
   skippedIds: string[];
+  isLoadingProperties: boolean;
 
   // Actions
   likeCurrent: () => void;
@@ -16,6 +19,7 @@ interface PropertyStore {
   setLikedIds: (ids: string[]) => void;
   movePropertyToTop: (propertyId: string) => void;
   removeFromLiked: (propertyId: string) => void;
+  loadPropertiesFromFirestore: () => Promise<void>;
 }
 
 export const usePropertyStore = create<PropertyStore>((set) => ({
@@ -23,6 +27,7 @@ export const usePropertyStore = create<PropertyStore>((set) => ({
   currentIndex: 0,
   likedIds: [],
   skippedIds: [],
+  isLoadingProperties: false,
 
   likeCurrent: () =>
     set((state) => {
@@ -57,8 +62,8 @@ export const usePropertyStore = create<PropertyStore>((set) => ({
   reset: () =>
     set({
       currentIndex: 0,
-      skippedIds: [],
       likedIds: [],
+      skippedIds: [],
     }),
 
   setProperties: (properties) => set({ properties }),
@@ -76,6 +81,7 @@ export const usePropertyStore = create<PropertyStore>((set) => ({
         properties: reorderedProperties,
         currentIndex: 0,
         skippedIds: [],
+        likedIds: state.likedIds,
       };
     }),
 
@@ -85,4 +91,33 @@ export const usePropertyStore = create<PropertyStore>((set) => ({
         likedIds: state.likedIds.filter((id) => id !== propertyId),
       };
     }),
+
+  loadPropertiesFromFirestore: async () => {
+    set({ isLoadingProperties: true });
+    try {
+      const q = query(collection(db, "properties"));
+      const querySnapshot = await getDocs(q);
+      const firestoreProperties: Property[] = [];
+      
+      querySnapshot.forEach((doc) => {
+        firestoreProperties.push(doc.data() as Property);
+      });
+
+      // Combine static properties with Firestore properties
+      const combinedProperties = [...seedProperties, ...firestoreProperties];
+      
+      // Remove duplicates by ID
+      const uniqueProperties = Array.from(
+        new Map(combinedProperties.map((prop) => [prop.id, prop])).values()
+      );
+
+      set({ 
+        properties: uniqueProperties,
+        isLoadingProperties: false,
+      });
+    } catch (error) {
+      console.error("Failed to load properties from Firestore:", error);
+      set({ isLoadingProperties: false });
+    }
+  },
 }));

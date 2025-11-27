@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState, useCallback, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
@@ -26,6 +27,7 @@ export default function HomePage() {
     setProperties,
     movePropertyToTop,
     removeFromLiked,
+    loadPropertiesFromFirestore,
   } = usePropertyStore();
 
   const [aiReason, setAiReason] = useState<string | null>(null);
@@ -40,6 +42,11 @@ export default function HomePage() {
   const property = properties[currentIndex];
   const isEndOfList = currentIndex >= properties.length;
   const likedProperties = properties.filter((p) => likedIds.includes(p.id));
+
+  // Load properties from Firestore on mount
+  useEffect(() => {
+    loadPropertiesFromFirestore();
+  }, [loadPropertiesFromFirestore]);
 
   // Load user data from Firestore on mount
   useEffect(() => {
@@ -268,6 +275,12 @@ export default function HomePage() {
             >
               ❤️ Liked ({likedIds.length})
             </button>
+            <Link
+              href="/admin"
+              className="rounded-full px-4 py-2 text-sm font-semibold bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
+            >
+              🛠 Admin
+            </Link>
             <button
               type="button"
               onClick={logout}

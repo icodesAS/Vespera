@@ -11,15 +11,11 @@ export default function AdminPanel() {
     title: "",
     price: 0,
     rent: 0,
-    rentPrice: 0,
     city: "",
     location: "",
     bedrooms: 2,
     bathrooms: 2,
-    beds: 2,
-    baths: 2,
     areaSqFt: 1000,
-    areaSqft: 1000,
     imageUrl: "",
   });
 
@@ -33,7 +29,7 @@ export default function AdminPanel() {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: ["price", "rent", "rentPrice", "bedrooms", "bathrooms", "beds", "baths", "areaSqFt", "areaSqft"].includes(name)
+      [name]: ["price", "rent", "bedrooms", "bathrooms", "areaSqFt"].includes(name)
         ? parseInt(value) || 0
         : value,
     }));
@@ -51,8 +47,16 @@ export default function AdminPanel() {
       }
 
       const propertyData = {
-        ...formData,
         id: `prop-${Date.now()}`,
+        title: formData.title,
+        price: formData.price || 0,
+        rent: formData.rent || 0,
+        city: formData.city,
+        location: formData.location || "",
+        bedrooms: formData.bedrooms || 2,
+        bathrooms: formData.bathrooms || 2,
+        areaSqFt: formData.areaSqFt || 1000,
+        imageUrl: formData.imageUrl,
         createdAt: new Date().toISOString(),
       };
 
@@ -63,15 +67,11 @@ export default function AdminPanel() {
         title: "",
         price: 0,
         rent: 0,
-        rentPrice: 0,
         city: "",
         location: "",
         bedrooms: 2,
         bathrooms: 2,
-        beds: 2,
-        baths: 2,
         areaSqFt: 1000,
-        areaSqft: 1000,
         imageUrl: "",
       });
 
@@ -157,50 +157,70 @@ export default function AdminPanel() {
                   rows={2}
                 />
 
-                <input
-                  type="number"
-                  name="price"
-                  placeholder="Price (₹)"
-                  value={formData.price}
-                  onChange={handleInputChange}
-                  className="rounded-2xl border-2 border-gray-200 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                />
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Purchase Price (₹)</label>
+                  <input
+                    type="number"
+                    name="price"
+                    placeholder="e.g., 14500000"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    className="w-full rounded-2xl border-2 border-gray-200 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Total property value</p>
+                </div>
 
-                <input
-                  type="number"
-                  name="rent"
-                  placeholder="Monthly Rent (₹)"
-                  value={formData.rent}
-                  onChange={handleInputChange}
-                  className="rounded-2xl border-2 border-gray-200 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                />
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Monthly Rent (₹)</label>
+                  <input
+                    type="number"
+                    name="rent"
+                    placeholder="e.g., 32000"
+                    value={formData.rent}
+                    onChange={handleInputChange}
+                    className="w-full rounded-2xl border-2 border-gray-200 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Rental price per month</p>
+                </div>
 
-                <input
-                  type="number"
-                  name="bedrooms"
-                  placeholder="Bedrooms"
-                  value={formData.bedrooms}
-                  onChange={handleInputChange}
-                  className="rounded-2xl border-2 border-gray-200 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                />
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Bedrooms</label>
+                  <input
+                    type="number"
+                    name="bedrooms"
+                    placeholder="e.g., 2"
+                    value={formData.bedrooms}
+                    onChange={handleInputChange}
+                    className="w-full rounded-2xl border-2 border-gray-200 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Number of bedrooms</p>
+                </div>
 
-                <input
-                  type="number"
-                  name="bathrooms"
-                  placeholder="Bathrooms"
-                  value={formData.bathrooms}
-                  onChange={handleInputChange}
-                  className="rounded-2xl border-2 border-gray-200 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                />
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Bathrooms</label>
+                  <input
+                    type="number"
+                    name="bathrooms"
+                    placeholder="e.g., 2"
+                    value={formData.bathrooms}
+                    onChange={handleInputChange}
+                    className="w-full rounded-2xl border-2 border-gray-200 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Number of bathrooms</p>
+                </div>
 
-                <input
-                  type="number"
-                  name="areaSqFt"
-                  placeholder="Area (sq.ft)"
-                  value={formData.areaSqFt}
-                  onChange={handleInputChange}
-                  className="rounded-2xl border-2 border-gray-200 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                />
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Area (sq.ft)</label>
+                  <input
+                    type="number"
+                    name="areaSqFt"
+                    placeholder="e.g., 1180"
+                    value={formData.areaSqFt}
+                    onChange={handleInputChange}
+                    className="w-full rounded-2xl border-2 border-gray-200 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Total property area in square feet</p>
+                </div>
 
                 <input
                   type="text"
