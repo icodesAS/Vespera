@@ -92,7 +92,6 @@ export default function HomePage() {
   const handleSwipeRight = useCallback(() => {
     if (isEndOfList || !property) return;
     
-    // Add to liked list first
     const newLikedIds = likedIds.includes(property.id) 
       ? likedIds 
       : [...likedIds, property.id];
@@ -102,7 +101,6 @@ export default function HomePage() {
     setAiReason(null);
     setExplainError(null);
 
-    // Persist to Firestore
     persistToFirestore(newLikedIds);
   }, [property, isEndOfList, likeCurrent, likedIds, setLikedIds, persistToFirestore]);
 
@@ -167,9 +165,13 @@ export default function HomePage() {
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       if (!searchQuery.trim()) return;
+      
       setIsSearching(true);
       setSearchError(null);
+
       try {
+        console.log("🔍 Starting search with query:", searchQuery);
+        
         const response = await fetch("/api/ai/search", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -179,14 +181,24 @@ export default function HomePage() {
           }),
         });
         
+        console.log("📡 Response status:", response.status);
+        
         if (!response.ok) {
-          throw new Error("AI search failed");
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || "AI search failed");
         }
 
         const payload = await response.json();
+        console.log("✅ Search successful, found properties:", payload.properties?.length);
         
-        if (!payload.properties?.length) {
-          throw new Error("AI search returned no matches");
+        if (!payload.properties || !Array.isArray(payload.properties)) {
+          throw new Error("Invalid response format from AI search");
+        }
+
+        if (payload.properties.length === 0) {
+          setSearchError("No properties matched your search. Try a different query.");
+          setIsSearching(false);
+          return;
         }
 
         setProperties(payload.properties);
@@ -195,8 +207,12 @@ export default function HomePage() {
         setAiReason(null);
         setExplainError(null);
       } catch (error) {
-        console.error("AI search error:", error);
-        setSearchError("AI search could not understand the request.");
+        console.error("❌ AI search error:", error);
+        setSearchError(
+          error instanceof Error 
+            ? error.message 
+            : "AI search could not understand the request."
+        );
       } finally {
         setIsSearching(false);
       }

@@ -8,12 +8,18 @@ type SearchPayload = {
 };
 
 export async function POST(req: NextRequest) {
+  console.log("🔍 AI Search API called");
+  
   try {
     const body = (await req.json()) as SearchPayload;
     const query = body.query?.trim();
     const allProperties = body.allProperties ?? [];
 
+    console.log("📝 Query:", query);
+    console.log("📦 Properties count:", allProperties.length);
+
     if (!query) {
+      console.log("❌ No query provided");
       return NextResponse.json(
         { error: "Query is required." },
         { status: 400 }
@@ -21,10 +27,14 @@ export async function POST(req: NextRequest) {
     }
 
     if (!allProperties.length) {
+      console.log("⚠️ No properties available");
       return NextResponse.json({ properties: [] });
     }
 
+    console.log("🤖 Initializing Vertex AI...");
     const genAI = getGenAI();
+    console.log("✅ Vertex AI initialized");
+    
     const prompt = `
 You are assisting a renter with a natural language request.
 
@@ -35,9 +45,14 @@ Properties (JSON):
 ${JSON.stringify(allProperties, null, 2)}
 
 Return ONLY a JSON array of property IDs ordered by relevance to the query.
+The IDs must exactly match the "id" field from the properties above.
 If no strong matches, still return an ordered array using the available IDs.
+
+Example response format:
+["prop-123", "prop-456", "prop-789"]
 `;
 
+    console.log("🚀 Sending request to Vertex AI...");
     const result = await genAI.models.generateContent({
       model: DEFAULT_MODEL,
       contents: [
@@ -51,18 +66,29 @@ If no strong matches, still return an ordered array using the available IDs.
       },
     });
 
+    console.log("✅ Received response from Vertex AI");
+
     const raw =
       result.response?.text?.trim?.() ||
       result.text?.trim?.() ||
       "[]";
 
+    console.log("📝 Raw AI response:", raw);
+
     const ordered = mapOrder(raw, allProperties);
+    console.log("✅ Ordered properties count:", ordered.length);
 
     return NextResponse.json({ properties: ordered });
   } catch (error) {
-    console.error("AI search error:", error);
+    console.error("❌ AI search error:", error);
+    console.error("❌ Error details:", error instanceof Error ? error.message : String(error));
+    console.error("❌ Error stack:", error instanceof Error ? error.stack : "No stack trace");
+    
     return NextResponse.json(
-      { error: "AI search failed." },
+      { 
+        error: "AI search failed.", 
+        details: error instanceof Error ? error.message : String(error) 
+      },
       { status: 500 }
     );
   }
@@ -81,6 +107,7 @@ function mapOrder(raw: string, all: Property[]) {
     }
   });
 
+  // Add remaining properties that weren't matched
   map.forEach((prop) => ordered.push(prop));
   return ordered;
 }
@@ -105,4 +132,3 @@ function extractIds(raw: string): string[] {
 
   return [];
 }
-
