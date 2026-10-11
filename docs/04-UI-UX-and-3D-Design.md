@@ -4,15 +4,14 @@
 frosted-glass cards, glowing violet/blue/pink accents, floating particles, and a 3D night city on the landing page.
 The 3D is used **only on the landing page**. The swipe screens stay light and fast, because a swipe app that lags feels broken.
 
-## 1. What your inspiration video shows
-Your video is a phone recording of a laptop screen (low resolution, so small details were not readable). The style I could see:
-- very dark navy/black background with **glowing particle clouds**
-- **floating translucent "glass" panels** tilted in 3D space, with colourful blurred gradients inside (magenta, orange, blue)
-- a camera that **moves through the scene as you scroll**, with big bold headings and tiny uppercase labels
-- neon colours (violet, pink, cyan) against the dark
+## 1. What your inspiration is
+Your inspiration is the Awwwards three.js collection, especially: Collective Pixels (Complica Studio), Teatika, Developer Office, Atmos Gallery (KauStudio), Snowflake. Also activetheory.net. We copy the FEEL (dark, glowing, depth, motion, premium) only — never code, text or assets. All visuals are original (copyright).
 
-We copy the **feeling** (dark, glowing, depth, motion), never the code, images or exact layout of any website.
-All visuals must be original (copyright). If you tell me the site names, we can write a more exact "mood list".
+## 1.5. Vespera brand identity
+- **Wordmark:** "Vespera" in Space Grotesk, lowercase or title case, with a soft pink-to-violet gradient and a small glowing dot — like a lit window at dusk.
+- **Landing hero line:** "Evening light. Exceptional homes."
+- **Voice:** calm, warm, premium. Never salesy, never pushy. Like a thoughtful friend who knows the city.
+- **Colour mood:** deep navy/black background, soft violet/pink accents, glowing particles. Premium, not loud.
 
 ## 2. Design tokens (put in `app/globals.css` under `@theme`)
 ```css
@@ -50,6 +49,34 @@ body { background: var(--color-bg-0); color: var(--color-text); }
 - **Respect `prefers-reduced-motion`:** turn off parallax, particles and auto-animations; keep simple fades.
 - Every animation must have a purpose: show state change, guide the eye, or add delight once. No constant spinning things on content pages.
 
+## 3.5 Motion tiers
+| Tier | Where | Gets |
+|------|-------|------|
+| 1 Cinematic | `/` landing only | Loader (max 2.5 s, skippable, once per session) · hero WebGL (Neon Skyline + cursor-reactive particles, optional light bloom via `@react-three/postprocessing` 3.2.0) · scroll-driven camera/scene · split-text line reveals · magnetic buttons · custom cursor (fine pointer only) · city marquee · Lenis smooth scroll |
+| 2 Light | all other pages (`/login`, `/onboarding`, `/discover`, `/explore`, `/property/[id]`, `/shortlist`, `/admin`) | Calm 2D ambient background (CSS gradient blobs + faint grain) · page enter: fade + 12px rise via `app/template.tsx` · overlay wipe between routes via a `TransitionLink` (NOT `AnimatePresence` exit across routes) · staggered card/list reveals · glass hover glow + small tilt · animated rent numbers (CountUp) · Lenis only on `/property/[id]` |
+| 3 Minimal | reduced motion, width < 768 px, ≤ 4 CPU cores, no WebGL, WebGL error | No WebGL, CSS gradient, fades only |
+
+Rules:
+- `/discover` never uses WebGL and never uses Lenis (Lenis fights swipe drag gestures).
+- Animate only `transform` and `opacity` in the DOM.
+- Respect `prefers-reduced-motion` everywhere.
+- Never two WebGL canvases at once.
+
+## 3.6 Shared motion components (build in Phase 3b)
+These components are built once in Phase 3b and used across all pages:
+- `AmbientBackground` — full-screen CSS gradient blobs + grain (Tier 2). No WebGL.
+- `PageWipe` + `TransitionLink` — overlay wipe between routes.
+- `app/template.tsx` — page enter animation (fade + 12px rise).
+- `Cursor` — custom cursor for desktop fine-pointer devices only.
+- `SplitReveal` — split-text line reveals (Tier 1 landing only).
+- `MagneticButton` — magnetic hover effect (Tier 1 landing only).
+- `Tilt` — subtle card tilt on hover (Tier 2).
+- `CountUp` — animated number count-up for rent values (Tier 2).
+- `Marquee` — scrolling city name marquee (Tier 1 landing only).
+- `Loader` — full-screen loader (max 2.5 s, skippable, once per session, landing only).
+
+Optional stretch (AFTER Phase 8, only if asked): a single WebGL shader ambient background on calm pages (login, onboarding, property, shortlist). Never on `/discover`. Never at the same time as the hero canvas. 30 fps cap, DPR 1, CSS fallback.
+
 ## 4. Page-by-page design brief
 
 ### `/` Landing ("Neon Skyline") — the only 3D page
@@ -65,7 +92,7 @@ body { background: var(--color-bg-0); color: var(--color-text); }
 - ~300 box "buildings" as one `InstancedMesh` (1 draw call), heights random, dark material with emissive coloured strips; `fog` for depth.
 - Particle field with drei `<Points>`: **8,000 on desktop, 2,000 on mobile**, slow upward drift, additive blending, violet/cyan/pink.
 - Camera "dolly": scroll progress (0→1 from Lenis/`useScroll`) moves the camera forward and slightly up through the city. Mouse movement adds tiny parallax (desktop only).
-- Glow is faked with emissive colours and additive sprites. **No bloom library** (see doc 02 §9 if we ever add one).
+- Optional light bloom via `@react-three/postprocessing` 3.2.0 (already installed). Desktop + good devices only, behind Tier-3 fallbacks. See docs/02 for the version.
 - A gradient + static poster image (`public/hero-poster.webp`) sits under the canvas and is shown while it loads and as the fallback.
 
 **Performance budget (landing):**
@@ -143,4 +170,4 @@ Cards with remove buttons; select 2–6 → **AI compare** opens a glass drawer 
 | UI-5 Polish | skeletons, empty/error states, 404, favicon, OG image, micro-interactions | accessibility checklist §6 all ticked |
 
 ## 9. Optional later (not in v2.0)
-Light theme · sound effects (off by default) · bloom glow (needs `@react-three/postprocessing`, test first) · View Transitions between pages.
+Light theme · sound effects (off by default) · View Transitions between pages.

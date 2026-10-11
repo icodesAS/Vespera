@@ -4,7 +4,7 @@
 a checklist for "done", and a note on when to ask Claude for help. One phase = one chat = one git branch.
 Small steps mean that if something breaks, we know exactly which step did it.
 
-Risk colours: 🟢 easy (Gemini in Antigravity is fine) · 🟡 medium (Gemini, then re-read the result) · 🔴 hard (use the strongest model you have, or bring it to Claude).
+Risk levels: Easy (Gemini in Kiro is fine) · Medium (Gemini, then re-read the result) · Hard (use the strongest model you have, or bring it to Claude).
 
 ## 0. How to work (read once)
 **Start every Antigravity chat with this** (replace N):
@@ -13,11 +13,11 @@ Risk colours: 🟢 easy (Gemini in Antigravity is fine) · 🟡 medium (Gemini, 
 > When done, run `npm run check`, paste the result, and tell me how I can see the result in the browser.
 
 **Git routine for every phase**
-1. `git checkout v2-rebuild` → `git pull` → `git checkout -b phase-N-short-name`
+1. `git checkout main` → `git pull` → `git checkout -b phase-N-short-name`
 2. Agent works, gate passes (`npm run check`).
 3. You look at it in the browser (`npm run dev`). Tick the "done when" list.
-4. `git add -A && git commit -m "feat: …"` → `git checkout v2-rebuild` → `git merge phase-N-short-name` → `git tag phase-N-done`.
-If a phase goes wrong: `git checkout v2-rebuild` (you are back to the last good state). Nothing is lost.
+4. `git add -A && git commit -m "feat: …"` → `git checkout main` → `git merge phase-N-short-name` → `git tag phase-N-done`.
+If a phase goes wrong: `git checkout main` (you are back to the last good state). Nothing is lost.
 
 **Rules for Antigravity agents**
 - Only **one agent edits files at a time**. Several agents on the same files cause conflicts.
@@ -25,7 +25,7 @@ If a phase goes wrong: `git checkout v2-rebuild` (you are back to the last good 
 - If an agent suggests upgrading a package, deleting `package-lock.json`, or using `--force`: say **no**, and take the error to Claude.
 
 **When to bring something to Claude** (paste this):
-> Context: PropSwipe v2 (Next 16.3.8, React 19.2.8, see docs/02). Phase N. 
+> Context: Vespera v2 (Next 16.4.0, React 19.3.0, see docs/02). Phase N. 
 > Goal: … 
 > Error / problem (exact text): … 
 > File(s) involved (paste code): … 
@@ -35,25 +35,25 @@ If a phase goes wrong: `git checkout v2-rebuild` (you are back to the last good 
 ## Phase map
 | Phase | Name | Risk | Matches UI stage |
 |-------|------|------|------------------|
-| 0 | Rescue and safety audit | 🟡 | |
-| 1 | Clean baseline + new Firebase | 🔴 | |
-| 2 | Data layer, seed data, stores | 🟡 | |
-| 3 | Design system, app shell, login | 🟢 | UI-1 |
-| 4 | Discover: swipe deck v2 + filters | 🟡 | UI-3 |
-| 5 | AI layer: routes, rerank, summary, explain, search | 🔴 | |
-| 6 | Onboarding quiz + Explore page | 🟢 | |
-| 7 | Detail page, map, rent helper, shortlist, copilot | 🟡 | UI-4 |
-| 8 | 3D landing page | 🔴 | UI-2 |
-| 9 | Admin, polish, performance, accessibility | 🟡 | UI-5 |
-| 10 | Deploy, README, media, launch | 🟢 | |
+| 0 | Rescue and safety audit | Medium | |
+| 1 | Clean Firebase setup | Hard | |
+| 2 | Data layer, seed data, stores | Medium | |
+| 3 | Design system, app shell, login | Easy | UI-1 |
+| 4 | Discover: swipe deck v2 + filters | Medium | UI-3 |
+| 5 | AI layer: routes, rerank, summary, explain, search | Hard | |
+| 6 | Onboarding quiz + Explore page | Easy | |
+| 7 | Detail page, map, rent helper, shortlist, copilot | Medium | UI-4 |
+| 8 | 3D landing page | Hard | UI-2 |
+| 9 | Admin, polish, performance, accessibility | Medium | UI-5 |
+| 10 | Deploy, README, media, launch | Easy | |
 
 ---
 
-## Phase 0 — Rescue and safety audit 🟡
+## Phase 0 — Rescue and safety audit (Medium)
 **Goal:** Keep the old code safe as reference, check nothing secret leaked, and note why v1 would not start. **No app code changes.**
 
-**You do first (5 min):** open the repo in Antigravity; in the terminal run `git status` (must be clean), then `git tag v1-legacy`, then `git checkout -b v2-rebuild`.
-Install **Node 22** (`node -v` must say v22.x). Copy `AGENTS.md` to the repo root and the `docs/` folder into the repo; commit as `docs: add project docs`.
+**You do first (5 min):** open the repo in your IDE; in the terminal run `git status` (must be clean), then verify the current working branch.
+Install **Node 24** (`node -v` must say v24.x). Copy `AGENTS.md` to the repo root and the `docs/` folder into the repo; commit as `docs: add project docs`.
 
 **Prompt:**
 > Phase 0. Do NOT change app code. (1) Run `git log --all --oneline -- service-account.json .env.local .env` and `git grep -nI "private_key\|AIza" $(git rev-list --all | head -50)` and tell me in plain English whether any secret was ever committed. 
@@ -66,26 +66,24 @@ Install **Node 22** (`node -v` must say v22.x). Copy `AGENTS.md` to the repo roo
 
 ---
 
-## Phase 1 — Clean baseline + new Firebase 🔴
+## Phase 1 — Clean Firebase setup (Hard)
 **Goal:** An empty but healthy Next 16 app with exact versions, a working Firebase connection, and safe rules.
 
-**You do (Firebase console, doc 03 §1):** create project, enable Email/Google/Anonymous, create Firestore (Mumbai, **production mode**), publish rules from `docs/assets/baseline/firestore.rules`, register web app, create `.env.local`.
+**You do (Firebase console, doc 03 §1):** create project, enable Email/Google/Anonymous, create Firestore (Mumbai, **production mode**), publish rules from `firestore.rules` at repo root, register web app, create `.env.local`.
 
 **Prompt:**
-> Phase 1. Read AGENTS.md, docs/02, docs/03. 
-> (1) Copy every file from `docs/assets/baseline/` into the repo root exactly as they are (`package.json`, `.npmrc`, `.nvmrc`, `.gitignore`, `.env.example`, `tsconfig.json`, `eslint.config.mjs`, `postcss.config.mjs`, `next.config.ts`; `firestore.rules` stays for reference). Do NOT change any version number. Add `legacy` to `tsconfig.json` `exclude` and to the `globalIgnores` list in `eslint.config.mjs`. 
-> (2) Run `npm install` (it must finish with no ERESOLVE error). If it errors, STOP and write `docs/_stuck/`. 
-> (3) Create `app/layout.tsx` (dark background, Geist + Space Grotesk fonts via next/font/google, `<Toaster/>` from sonner), `app/globals.css` (tokens from docs/04 §2), `app/page.tsx` (a simple placeholder "PropSwipe v2"). 
-> (4) Create `lib/env.ts` (Zod-validated env, never crashes: exports `firebaseConfigStatus`), `lib/firebase.ts` (modular SDK, browser-only, safe if config is missing), and a hidden page `app/dev/health/page.tsx` that shows 4 green/red checks: env present · Firebase initialised · Firestore can read `properties` (empty is OK) · anonymous sign-in works. 
-> (5) Run `npm run check` and paste the output.
+> Phase 1. Read AGENTS.md, docs/02, docs/03. Phase 1 is already complete. Review the existing setup and ensure everything works. Run `npm run check` and paste the output.
 
-**Done when:** `npm run check` passes · `http://localhost:3000/dev/health` shows 4 green ticks · `package-lock.json` is committed · `git diff package.json` against the baseline shows **zero** changes.
-**Ask Claude:** paste your Firestore rules and the Rules Playground results table (doc 03 §6) and ask "review these rules". 🔴
+**Done when:** `npm run check` passes · existing app functions · package versions match package.json.
+**Ask Claude:** paste your Firestore rules and the Rules Playground results table (doc 03 §6) and ask "review these rules". (Hard)
 
 ---
 
-## Phase 2 — Data layer, seed data, stores 🟡
+## Phase 2 — Data layer, seed data, stores (Medium)
 **Goal:** Safe data code and 20 good demo homes in the database.
+
+**Prerequisites:**
+- Hard-coded model name in `lib/ai.ts` line 6: `"gemini-3.8-flash"` (fallback only if env vars are missing). This is acceptable as it's a last-resort default.
 
 **Prompt:**
 > Phase 2. Read AGENTS.md, docs/01 §10, docs/03. 
@@ -100,7 +98,7 @@ Install **Node 22** (`node -v` must say v22.x). Copy `AGENTS.md` to the repo roo
 
 ---
 
-## Phase 3 — Design system, app shell, login 🟢
+## Phase 3 — Design system, app shell, login (Easy)
 **Goal:** The look from docs/04, reusable parts, and working login (Email, Google, Guest).
 
 **Prompt:**
@@ -115,7 +113,7 @@ Install **Node 22** (`node -v` must say v22.x). Copy `AGENTS.md` to the repo roo
 
 ---
 
-## Phase 4 — Discover: swipe deck v2 + filters 🟡
+## Phase 4 — Discover: swipe deck v2 + filters (Medium)
 **Goal:** The heart of the app, smooth and polished.
 
 **Prompt:**
@@ -128,7 +126,7 @@ Install **Node 22** (`node -v` must say v22.x). Copy `AGENTS.md` to the repo roo
 
 ---
 
-## Phase 5 — AI layer 🔴
+## Phase 5 — AI layer (Hard)
 **Goal:** All five AI routes, secure, validated, with fallbacks, wired into the UI.
 
 **You do:** put `GEMINI_API_KEY` in `.env.local` (and later Vercel). Run the model list `curl` from docs/05 §2 and confirm `gemini-3.5-flash` exists; otherwise tell the agent the right name.
@@ -139,11 +137,11 @@ Install **Node 22** (`node -v` must say v22.x). Copy `AGENTS.md` to the repo roo
 > **5c — wiring.** Enable the AI search bar; add `ExplainPanel` (score ring + pros/cons) on cards; add the auto-rerank every 5 swipes (docs/05 §7) with the toast; add `/shortlist` "AI compare" panel (the page itself is finished in Phase 7, just enable the panel for now if the page exists).
 
 **Done when:** smoke script prints all PASS · with a wrong `GEMINI_MODEL` the UI still works (offline label) · no key or user text in logs · logged-out request gets 401 · after 5 swipes the toast appears and unseen cards reorder without moving the current card.
-**Ask Claude:** paste `lib/auth-server.ts` + one route and ask for a security review; also if token verification with project-id-only fails. 🔴
+**Ask Claude:** paste `lib/auth-server.ts` + one route and ask for a security review; also if token verification with project-id-only fails. (Hard)
 
 ---
 
-## Phase 6 — Onboarding quiz + Explore 🟢
+## Phase 6 — Onboarding quiz + Explore (Easy)
 **Prompt:**
 > Phase 6. Read AGENTS.md, docs/01 §6–§7, docs/04 §4. 
 > Build `/onboarding` (5 steps, Skip always visible, progress dots, ₹ formatting with `toLocaleString("en-IN")`) saving `PreferencesSchema` + `onboardingComplete:true` via `savePreferences`. Skipping saves safe defaults. Add "Edit preferences" in the Nav menu. 
@@ -154,18 +152,18 @@ Install **Node 22** (`node -v` must say v22.x). Copy `AGENTS.md` to the repo roo
 
 ---
 
-## Phase 7 — Detail page, map, rent helper, shortlist, copilot 🟡
+## Phase 7 — Detail page, map, rent helper, shortlist, copilot (Medium)
 **Prompt (split 7a, 7b, 7c):**
 > **7a — detail page.** Read AGENTS.md, docs/01 §5, docs/04 §4. Build `/property/[id]` (remember: `params` is a Promise). Gallery, facts grid, amenities, nearby, `MapView` (`"use client"`, loaded with `dynamic ssr:false`, `leaflet.css`, `L.divIcon` marker, visible OSM attribution), **Rent helper** (income → rent-to-income %, move-in cost), similar homes (same city, ±20% rent), sticky mobile action bar. Link from every card and from the explore map. 
 > **7b — shortlist.** `/shortlist`: liked homes, remove (arrayRemove), select 2–6, **AI compare** drawer using `summary`. 
 > **7c — copilot.** Read docs/05 §8. Build `chat` route and `CopilotChat` drawer (non-streaming). Compute `facts` in code (workplace distance only when a landmark matches). Starter chips. History in React state only.
 
 **Done when:** deep-linking `/property/prop-003` works after refresh · map shows one pin · rent helper math is right (check by hand) · copilot never invents distances (ask it something it cannot know and see "I don't have that detail").
-**Ask Claude:** copilot prompt review and prompt-injection tests. 🟡
+**Ask Claude:** copilot prompt review and prompt-injection tests. (Medium)
 
 ---
 
-## Phase 8 — 3D landing page 🔴
+## Phase 8 — 3D landing page (Hard)
 **Goal:** The "wow" page, without hurting speed.
 
 **Prompt (split 8a, 8b, 8c):**
@@ -174,11 +172,11 @@ Install **Node 22** (`node -v` must say v22.x). Copy `AGENTS.md` to the repo roo
 > **8c — measure.** Test with DevTools CPU 4× slowdown and at 360×800. Record Lighthouse mobile + desktop for `/`. Fix until budget in docs/04 is met. Write the numbers in `docs/perf-notes.md`.
 
 **Done when:** landing is ≥ 70 Lighthouse mobile · poster/gradient shows if WebGL is off (test by disabling hardware acceleration or using reduced motion) · 3D pauses when scrolled away or tab hidden · no console errors · `/discover` loads **no** three.js code (check Network tab).
-**Ask Claude:** any WebGL context-lost, hydration mismatch, or "window is not defined" error. 🔴 (This phase is not verified in a real browser by me, so expect to iterate.)
+**Ask Claude:** any WebGL context-lost, hydration mismatch, or "window is not defined" error. (Hard) (This phase is not verified in a real browser by me, so expect to iterate.)
 
 ---
 
-## Phase 9 — Admin, polish, performance, accessibility 🟡
+## Phase 9 — Admin, polish, performance, accessibility (Medium)
 **Prompt:**
 > Phase 9. Read AGENTS.md, docs/03 §5, docs/04 §6, docs/07. 
 > (1) `/admin`: only if `admins/<uid>` exists (else friendly "Not allowed"). Add / edit / delete homes with Zod validation; **Seed demo data** button (idempotent); "System health" panel (env present, Gemini key present, Firestore reachable). 
@@ -192,10 +190,10 @@ Install **Node 22** (`node -v` must say v22.x). Copy `AGENTS.md` to the repo roo
 
 ---
 
-## Phase 10 — Deploy, README, media, launch 🟢
+## Phase 10 — Deploy, README, media, launch (Easy)
 **Prompt:**
 > Phase 10. Read AGENTS.md, docs/08. 
-> (1) Prepare for Vercel: set Node 22, build command `npm run build`, install command `npm ci`. List every env var I must add in Vercel (names only). 
+> (1) Prepare for Vercel: set Node 24, build command `npm run build`, install command `npm ci`. List every env var I must add in Vercel (names only). 
 > (2) Follow docs/08 to write `README.md` (skeleton there), create `docs/media/` placeholders and the Mermaid diagrams. 
 > (3) Add `LICENSE` (MIT) and a short `docs/credits.md` for fonts, icons, map data (OpenStreetMap), any 3D/image assets. 
 > (4) Final gate: `npm run check`, then `npm audit --omit=dev` and report in plain English; do NOT run `audit fix`.

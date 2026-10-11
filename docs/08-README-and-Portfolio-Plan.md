@@ -100,12 +100,12 @@ erDiagram
 **Build timeline (edit the dates to your real ones)**
 ```mermaid
 gantt
-  title PropSwipe v2 build plan
+  title Vespera v2 build plan
   dateFormat YYYY-MM-DD
   axisFormat %d %b
   section Foundation
   P0 Rescue and audit         :p0, 2026-10-12, 1d
-  P1 Baseline + Firebase      :p1, after p0, 2d
+  P1 Firebase setup           :p1, after p0, 2d
   P2 Data layer               :p2, after p1, 2d
   section App
   P3 Design system + login    :p3, after p2, 3d
@@ -124,12 +124,12 @@ Test every diagram by pasting it into a GitHub preview or <https://mermaid.live>
 ````markdown
 <div align="center">
 
-<img src="docs/media/banner.png" alt="PropSwipe banner" width="100%" />
+<img src="docs/media/banner.png" alt="Vespera banner" width="100%" />
 
-# PropSwipe
+# Vespera
 
 **Swipe your next home. Let AI explain why it fits.**
-A Tinder-style rental discovery app for India, with Gemini-powered search, re-ranking, comparison and a chat copilot.
+A AI-guided home discovery app for India, with Gemini-powered search, re-ranking, comparison and a chat copilot.
 
 [**Live demo**](⟪https://your-app.vercel.app⟫) · [Video walkthrough](⟪link⟫) · [Docs](docs/)
 
@@ -142,22 +142,22 @@ A Tinder-style rental discovery app for India, with Gemini-powered search, re-ra
 ![Three.js](https://img.shields.io/badge/Three.js-R3F-000000?logo=threedotjs&logoColor=white)
 ![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?logo=vercel&logoColor=white)
 
-<img src="docs/media/hero.gif" alt="PropSwipe demo" width="80%" />
+<img src="docs/media/hero.gif" alt="Vespera demo" width="80%" />
 
 </div>
 
 > Demo data is fictional and for demonstration only. No real listings.
 
-## ✨ Why I built it
-⟪2–3 honest sentences: started as a first-year practice project; rebuilt it to learn production habits: security rules, AI with validation and fallbacks, performance, accessibility.⟫
+## Why I built it
+(2-3 honest sentences: started as a first-year practice project; rebuilt it to learn production habits: security rules, AI with validation and fallbacks, performance, accessibility.)
 
-## 🎬 Try it in 60 seconds
+## Try it in 60 seconds
 1. Open the live demo → **Try as guest** (no sign-up)
 2. Swipe 4–5 homes → watch the AI reorder what comes next
 3. Open a home → map, rent helper, **Ask the copilot**
 4. Shortlist 2–3 → **AI compare**
 
-## 🚀 Features
+## Features
 | | |
 |---|---|
 | **Swipe deck** with undo, haptics, keyboard | <img src="docs/media/swipe.gif" width="320" /> |
@@ -204,8 +204,8 @@ Every version is pinned and tested together: see [docs/02](docs/02-Tech-Stack-an
 
 ## 🛠️ Run it locally
 ```bash
-git clone ⟪repo url⟫ && cd PropSwipe
-nvm use 22              # Node 22 required
+git clone ⟪repo url⟫ && cd Vespera
+nvm use 24              # Node 24 required
 cp .env.example .env.local   # then fill in the values
 npm install
 npm run dev             # http://localhost:3000
@@ -247,7 +247,7 @@ Fonts, icons, OpenStreetMap contributors, 3D assets: see [docs/credits.md](docs/
 - Add `LICENSE` (MIT) and make sure no secrets are in history (doc 07 §7).
 
 ## 5. Portfolio write-up (fill with true numbers)
-**One-liner:** "PropSwipe is a swipe-based rental discovery app with Gemini-powered search, re-ranking, comparison and a grounded chat copilot, built with Next.js 16, Firebase and React Three Fiber."
+**One-liner:** "Vespera is a swipe-based rental discovery app with Gemini-powered search, re-ranking, comparison and a grounded chat copilot, built with Next.js 16, Firebase and React Three Fiber."
 
 **Resume bullets (edit after you measure):**
 - Rebuilt a first-year prototype into a production-style app (Next.js 16, React 19, TypeScript, Firebase) with guest login, role-based admin and tested security rules.
@@ -262,9 +262,9 @@ Fonts, icons, OpenStreetMap contributors, 3D assets: see [docs/credits.md](docs/
 5. *Tradeoffs:* read `docs/00-Decisions-Log.md` aloud once. Every row is a good answer.
 
 **LinkedIn post template:**
-> I rebuilt my first-year project into something I'm proud of: **PropSwipe**, a Tinder-style rental finder with AI that learns your taste as you swipe. 🏠✨
-> What's inside: Next.js 16 · Firebase · Gemini · a 3D landing page in React Three Fiber.
-> What I learned: ⟪2 specific lessons⟫.
+> I rebuilt my first-year project into something I'm proud of: **Vespera**, an AI-guided home finder with AI that learns your taste as you swipe.
+> What's inside: Next.js 16, Firebase, Gemini, a 3D landing page in React Three Fiber.
+> What I learned: (2 specific lessons).
 > Try it as a guest (no sign-up): ⟪link⟫ · Code: ⟪link⟫
 > #nextjs #react #firebase #gemini #threejs #webdev
 

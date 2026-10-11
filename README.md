@@ -1,171 +1,179 @@
-# PropSwipe 🏠✨
+# Vespera
 
-> **AI-Powered Rental Discovery Engine for Indian Metros**  
-> Swipe right to shortlist, swipe left to skip, and get instant Gemini AI match evaluations, automated taste re-ranking, and localized insights.
+**Evening light. Exceptional homes.**
 
-[![Next.js 16](https://img.shields.io/badge/Next.js-16.4.0-black?logo=nextdotjs)](https://nextjs.org/)
-[![React 19](https://img.shields.io/badge/React-19.3.0-61DAFB?logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript 5.9](https://img.shields.io/badge/TypeScript-5.9.3-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind CSS 4](https://img.shields.io/badge/Tailwind-4.3.3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![Firebase 13](https://img.shields.io/badge/Firebase-13.0.0-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com/)
-[![Google GenAI](https://img.shields.io/badge/Gemini-AI%202.28-8E75B2?logo=googlegemini&logoColor=white)](https://ai.google.dev/)
-[![Three.js](https://img.shields.io/badge/three.js-R3F-black?logo=threedotjs)](https://threejs.org/)
+Vespera is an AI-guided home discovery app for renters in India. Swipe through curated rental listings while AI explains each property's fit with your preferences, intelligently reorders your deck based on your choices, and helps you make faster, more confident decisions.
 
----
+## Project Status
 
-## 💡 Why PropSwipe?
+| Feature | Status |
+|---------|--------|
+| Firebase Auth (Email, Google, Anonymous) | Working today |
+| Property database with Firestore | Working today |
+| Swipe deck interface | Working today |
+| Like and skip functionality | Working today |
+| User profiles and preferences | Working today |
+| AI property explanations (Gemini) | Working today |
+| Onboarding flow | In progress |
+| AI-powered deck reranking | In progress |
+| AI search | Planned |
+| Interactive maps | Planned |
+| Rental cost calculator | Planned |
+| Shortlist comparison | Planned |
+| AI copilot chat assistant | Planned |
+| 3D landing page | Planned |
+| Admin panel | Planned |
 
-Searching for rental homes in Indian tech hubs (Bengaluru, Pune, Gurugram, Mumbai) is notoriously cluttered. Renters scroll through endless unvetted portals, misleading brokerage listings, and walls of repetitive text.
+## Features
 
-* **The Problem:** Renter fatigue caused by information overload, uncurated listings, and no instant way to evaluate if a flat actually meets commute, budget, and lifestyle requirements.
-* **The Solution:** A rapid, swipe-driven card discovery interface that eliminates cognitive load. You review one property at a time, shortlisting or passing in milliseconds.
-* **The AI Advantage:** Google Gemini acts as your on-demand real estate analyst — explaining exact pros and cons against your budget, dynamically re-ordering unseen homes based on your taste patterns, and answering natural language queries.
+### Currently Working
+- **User Authentication**: Sign in with email, Google, or try as a guest (anonymous auth)
+- **Property Discovery**: Browse rental listings with detailed information, photos, and amenities
+- **Swipe Interface**: Card-based swiping with smooth animations and keyboard shortcuts
+- **Preference Tracking**: System tracks liked and skipped properties
+- **AI Property Analysis**: Gemini AI provides detailed assessments of each property
+- **Secure Data**: Production-ready Firestore security rules ensure data privacy
 
----
+### Tech Stack
 
-## ✨ Features
+| Layer | Technology | Version |
+|-------|------------|---------|
+| Framework | Next.js (App Router) | 16.4.0 |
+| UI Library | React | 19.3.0 |
+| Language | TypeScript | 5.9.3 |
+| Styling | Tailwind CSS | 4.3.3 |
+| Animation | motion | 14.1.0 |
+| Database & Auth | Firebase | 13.0.0 |
+| Server Auth | Firebase Admin | 14.5.0 |
+| AI Engine | Google GenAI SDK | 2.28.0 |
+| State Management | Zustand | 5.0.15 |
+| 3D Graphics | Three.js + React Three Fiber + Drei | 0.186.1 / 9.8.1 / 10.7.9 |
+| Maps | Leaflet + React Leaflet | 1.9.4 / 5.0.0 |
+| Icons | Lucide React | 1.55.0 |
+| Smooth Scroll | Lenis | 1.3.26 |
+| Notifications | Sonner | 2.0.8 |
+| Validation | Zod | 4.6.5 |
 
-- **🎯 Fluid Swipe Discovery Deck:** Card interface powered by gesture-driven physics (`motion/react`), keyboard shortcuts, and smooth micro-interactions.
-- **🤖 Gemini AI Match Copilot:**
-  - **Instant Property Breakdown:** Evaluates budget alignment, IT hub connectivity, bedroom requirements, and safety with honest pros and cons.
-  - **Taste-Based Deck Re-ranking:** Analyzes the homes you liked vs. skipped to dynamically prioritize the most relevant listings in your remaining deck.
-  - **Natural Language AI Search:** Search in plain English (e.g., *"quiet 2BHK under 35k in Pune near metro"*) and let Gemini find matching properties.
-- **🔒 Enterprise-Grade Security:**
-  - Token-verified API route handlers protected via Firebase Admin SDK.
-  - Strict Firestore security rules ensuring renters only modify their own shortlist data.
-  - Server-side only Gemini execution — zero API keys exposed to the client.
-- **🇮🇳 Localized for Indian Cities:** Rent in INR (₹/mo), deposit structures, furnishing states (Furnished, Semi-Furnished, Unfurnished), and IT corridor neighborhood tags.
+<!-- TODO: hero GIF and screenshots in Phase 10 -->
 
----
-
-## 🏗️ Architecture & Data Flow
+## Architecture
 
 ```mermaid
 graph TD
-    Client["Client Browser (Next.js 16 App Router)"]
-    Auth["Firebase Auth (Email/Pass & Google)"]
-    Firestore[("Cloud Firestore (asia-south1)")]
-    ServerAPI["Next.js Node.js Route Handlers (/api/ai/*)"]
-    AdminSDK["Firebase Admin SDK (Token Verification)"]
-    Gemini["Google Gemini AI (@google/genai)"]
+    Client["Client Browser<br/>(Next.js 16 App Router)"]
+    Auth["Firebase Auth"]
+    Firestore[("Cloud Firestore<br/>(Mumbai, asia-south1)")]
+    API["Next.js API Routes<br/>(Node.js runtime)"]
+    AdminSDK["Firebase Admin SDK<br/>(Token Verification)"]
+    Gemini["Google Gemini AI"]
 
-    Client -->|1. Sign in / Token| Auth
-    Client -->|2. Real-time Shortlists & Likes| Firestore
-    Client -->|3. AI Request with Bearer Token| ServerAPI
-    ServerAPI -->|4. Verify Token & Session| AdminSDK
-    ServerAPI -->|5. Structured Prompt & Schema Validation| Gemini
-    Gemini -->|6. Match Analysis & Re-ranked Order| ServerAPI
-    ServerAPI -->|7. Fallback-Guaranteed JSON| Client
+    Client -->|"1. Sign in"| Auth
+    Client -->|"2. Read/Write Data"| Firestore
+    Client -->|"3. AI Requests with Token"| API
+    API -->|"4. Verify Token"| AdminSDK
+    API -->|"5. Generate Insights"| Gemini
+    Gemini -->|"6. AI Response"| API
+    API -->|"7. JSON Response"| Client
 ```
 
-### User Journey
-
-```mermaid
-journey
-  title A Renter's First 2 Minutes
-  section Discover
-    Open discovery deck: 5: Renter
-    Sign in with Google or Email: 5: Renter
-  section Swipe & Evaluate
-    Swipe right to shortlist: 5: Renter
-    Swipe left to pass: 5: Renter
-    Click Explain with AI: 5: Renter
-  section Decision
-    AI re-orders remaining deck: 5: Renter
-    Review shortlisted panel: 5: Renter
-```
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technology | Version | Purpose |
-|---|---|---|---|
-| **Framework** | Next.js (App Router) | `16.4.0` | Turbopack dev, server components, API routes |
-| **UI Library** | React | `19.3.0` | Latest concurrent UI engine |
-| **Language** | TypeScript | `5.9.3` | Strict end-to-end type safety |
-| **Styling** | Tailwind CSS | `4.3.3` | CSS-first modern utility engine |
-| **Motion** | `motion/react` | `14.1.0` | Hardware-accelerated card gestures & fluid transitions |
-| **Database & Auth** | Firebase & Firebase Admin | `13.0.0` / `14.5.0` | Client auth, Firestore security rules, server token auth |
-| **AI Engine** | Google GenAI SDK | `2.28.0` | Gemini 3.8 Flash / 3.5 Flash Lite decision engine |
-| **3D Graphics** | Three.js + R3F + Drei | `0.186.1` / `9.8.1` | Lazy-loaded interactive 3D hero scene |
-| **State** | Zustand | `5.0.15` | Client-side reactive property & swipe deck store |
-
----
-
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-- **Node.js**: `24.12.0` or higher (`node -v`)
-- **npm**: `11.x` (`npm -v`)
+- Node.js 24.12.0 or newer
+- npm (comes with Node)
 
 ### Installation
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/icodesAS/PropSwipe.git
-   cd PropSwipe
-   ```
+1. Clone the repository:
+```bash
+git clone https://github.com/icodesAS/Vespera.git
+cd Vespera
+```
 
-2. **Install pinned dependencies:**
-   ```bash
-   npm install
-   ```
+2. Install dependencies:
+```bash
+npm install
+```
 
-3. **Configure Environment Variables:**
-   Create a `.env.local` file in the project root:
-   ```env
-   # Firebase Client SDK
-   NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
-   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-   NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.firebasestorage.app
-   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-   NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+3. Configure environment variables:
 
-   # Firebase Admin SDK (Server-Side)
-   FIREBASE_ADMIN_CREDENTIALS_BASE64=your_base64_service_account_json
+Copy `.env.example` to `.env.local` and add your configuration:
 
-   # Gemini AI
-   GEMINI_API_KEY=your_gemini_api_key
-   GEMINI_MODEL=gemini-3.8-flash
-   GEMINI_FALLBACK_MODEL=gemini-3.5-flash-lite
-   ```
+```env
+# Firebase Client SDK (browser-safe, public)
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.firebasestorage.app
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 
-4. **Run Development Server:**
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
+# Firebase Admin SDK (server-only, secret)
+FIREBASE_ADMIN_CREDENTIALS_BASE64=your_base64_encoded_service_account
 
-5. **Verify Build & Types:**
-   ```bash
-   npm run check
-   ```
+# Gemini AI (server-only, secret)
+GEMINI_API_KEY=your_gemini_api_key
+GEMINI_MODEL=gemini-3.8-flash
+GEMINI_FALLBACK_MODEL=gemini-3.5-flash-lite
+```
 
----
+4. Run the development server:
+```bash
+npm run dev
+```
 
-## 🛡️ Security & Reliability Principles
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-1. **Zero Secrets in Client Bundles:** All Gemini AI calls and administrative database actions occur inside server route handlers (`app/api/**`).
-2. **Graceful Fallbacks:** Every AI route is engineered with non-AI algorithmic fallbacks. If the Gemini API experiences network disruption (e.g. rate limit or 503), the UI never crashes or presents blank screens.
-3. **Database Additive Only:** Existing collections and properties maintain backward compatibility without breaking existing users.
-4. **Strict Type Validation:** All external data (Firestore reads, request payloads, AI outputs) pass through strict TypeScript and Zod validation.
+### Scripts
 
----
+- `npm run dev` - Start development server (Turbopack)
+- `npm run build` - Build production bundle
+- `npm start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run typecheck` - Run TypeScript compiler checks
+- `npm run check` - Run typecheck + lint + build (full validation)
 
-## 🗺️ Roadmap
+## Security Notes
 
-- [x] **Phase 1:** Clean foundation, pinned dependency tree, Firebase Auth & Firestore setup, Gemini v2 integration.
-- [ ] **Phase 2:** Database & Auth hardening, user profile onboarding, admin verification, swipe history persistence.
-- [ ] **Phase 3:** Dark-mode design system overhaul with fluid card physics & micro-animations.
-- [ ] **Phase 4:** Interactive 3D hero scene (Three.js / React Three Fiber).
-- [ ] **Phase 5:** Leaflet interactive transit map & neighborhood amenities scanner.
-- [ ] **Phase 6:** Streaming Gemini Rental Copilot chat assistant.
+- All Gemini AI operations run server-side; API keys never reach the browser
+- Firestore security rules enforce user-level access control
+- Firebase Admin SDK verifies authentication tokens on all AI routes
+- Only variables prefixed with `NEXT_PUBLIC_` are exposed to the client
+- Never commit `.env.local` or `service-account.json` files
 
----
+## Documentation
 
-## 📄 License
+Comprehensive documentation is available in the `docs/` folder:
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+- `AGENTS.md` - Agent rules and project guidelines
+- `docs/00-Decisions-Log.md` - Technical decisions and rationale
+- `docs/01-Project-Overview.md` - Product features and roadmap
+- `docs/02-Tech-Stack-and-Versions.md` - Dependency versions and constraints
+- `docs/03-Firebase-and-Data.md` - Database schema and security rules
+- `docs/04-UI-UX-and-3D-Design.md` - Design system and animations
+- `docs/05-AI-Architecture.md` - AI integration and prompts
+- `docs/06-Build-Phases-and-Prompts.md` - Development phases
+- `docs/07-Risks-Debugging-and-Fixes.md` - Troubleshooting guide
+- `docs/08-README-and-Portfolio-Plan.md` - Portfolio presentation
+
+## Roadmap
+
+- **Phase 2**: Enhanced data layer, seed properties, Zustand stores
+- **Phase 3**: Complete design system and onboarding flow
+- **Phase 4**: Advanced swipe deck with filters
+- **Phase 5**: Full AI integration (explain, rerank, search)
+- **Phase 6**: Onboarding quiz and explore page
+- **Phase 7**: Property details, maps, shortlist, copilot chat
+- **Phase 8**: Interactive 3D landing page
+- **Phase 9**: Admin panel, accessibility, performance optimization
+- **Phase 10**: Production deployment and documentation
+
+## License
+
+MIT
+
+## Author
+
+**Aman**  
+GitHub: [@icodesAS](https://github.com/icodesAS)

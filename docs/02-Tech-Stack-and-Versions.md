@@ -3,51 +3,50 @@
 **Plain-English summary:** Every package has an **exact** version number (no `^`). These exact
 numbers were installed together and tested on 11 Oct 2026, so they do not fight each other. Think of it like
 a recipe: if you swap one ingredient for a newer one, the dish can fail. **Do not upgrade anything unless the owner says so.**
-The ready-to-copy files are in `docs/assets/baseline/`.
 
 ## 1. Runtime
 | Tool | Version | Note |
 |------|---------|------|
-| Node.js | **22.x** (LTS) | `.nvmrc` says `22`. Windows: install from nodejs.org or use `nvm-windows` (`nvm install 22`, `nvm use 22`) |
-| npm | 10.x (comes with Node 22) | `.npmrc` forces exact saves and strict Node check |
+| Node.js | **22.x** (LTS) | `.nvmrc` says `22`. Windows: install from nodejs.org or use `nvm-windows` (`nvm install 24`, `nvm use 24`) |
+| npm | 10.x (comes with Node 24) | `.npmrc` forces exact saves and strict Node check |
 
-## 2. Locked packages (copy of `docs/assets/baseline/package.json`)
+## 2. Locked packages (from `package.json`)
 
 **Dependencies**
 | Package | Exact version | Used for | Browser or server |
 |---------|---------------|----------|-------------------|
-| next | **16.3.8** | framework (App Router, Turbopack) | both |
-| react, react-dom | **19.2.8** | UI | both |
-| firebase | **12.19.0** | Auth + Firestore (modular SDK) | **browser only** |
-| firebase-admin | **14.4.0** | verify login tokens on AI routes | **server only** |
-| @google/genai | **2.23.0** | Gemini API | **server only** |
+| next | **16.4.0** | framework (App Router, Turbopack) | both |
+| react, react-dom | **19.3.0** | UI | both |
+| firebase | **13.0.0** | Auth + Firestore (modular SDK) | **browser only** |
+| firebase-admin | **14.5.0** | verify login tokens on AI routes | **server only** |
+| @google/genai | **2.28.0** | Gemini API | **server only** |
 | zod | **4.6.5** | schemas / validation / AI JSON schemas | both |
 | zustand | **5.0.15** | small global stores | browser |
-| motion | **13.4.0** | animation, drag (`import … from "motion/react"`) | browser |
-| three | **0.186.0** | 3D engine | browser |
-| @react-three/fiber | **9.7.0** | React renderer for three | browser |
-| @react-three/drei | **10.7.8** | 3D helpers (Float, Points, useTexture…) | browser |
+| motion | **14.1.0** | animation, drag (`import … from "motion/react"`) | browser |
+| three | **0\.186.1** | 3D engine | browser |
+| @react-three/fiber | **9.8.1** | React renderer for three | browser |
+| @react-three/drei | **10.7.9** | 3D helpers (Float, Points, useTexture…) | browser |
 | lenis | **1.3.26** | smooth scrolling | browser |
 | leaflet | **1.9.4** | maps | browser |
 | react-leaflet | **5.0.0** | React wrapper for Leaflet | browser |
-| lucide-react | **1.47.0** | icons | browser |
+| lucide-react | **1.55.0** | icons | browser |
 | sonner | **2.0.8** | toasts | browser |
 | clsx | **2.1.1**, tailwind-merge **3.7.0** | class name helper `cn()` | both |
 | server-only | **0.0.1** | makes the build fail if server code is imported in the browser | server |
 
 **Dev dependencies**
-`typescript 5.9.3` · `eslint 9.39.5` · `eslint-config-next 16.3.8` · `tailwindcss 4.3.3` ·
-`@tailwindcss/postcss 4.3.3` · `postcss 8.5.28` · `@types/node 22.20.4` · `@types/react 19.2.18` ·
-`@types/react-dom 19.2.7` · `@types/three 0.186.0` · `@types/leaflet 1.9.22`
+`typescript 5.9.3` · `eslint 9.39.0` · `eslint-config-next 16.4.0` · `tailwindcss 4.3.3` ·
+`@tailwindcss/postcss 4.3.3` · `postcss 8.5.28` · `@types/Node 24.20.4` · `@types/react 19.3.0` ·
+`@types/react-dom 19.3.0` · `@types/three 0\.186.1` · `@types/leaflet 1.9.22`
 
 ## 3. The five "locks" (and why)
 | Lock | Why | Tested result |
 |------|-----|---------------|
-| **React < 19.3** while R3F is 9.7.x | R3F 9.7.x declares `react >=19 <19.3` | React 19.3.0 + R3F 9.7.0 → **npm ERESOLVE error** |
+| **React stays below 19.4** while `@react-three/fiber` is 9.8.x | R3F 9.8.x declares `react >=19 <19.4` | React 19.3.0 + R3F 9.8.1 → **npm ERESOLVE error** |
 | **ESLint 9.x** | ESLint 10 breaks `eslint-plugin-react` inside `eslint-config-next` | ESLint 10.12 → crash at lint time |
 | **TypeScript 5.9.x** | official Next 16 starter uses `^5` | TS 6/7 not proven with this toolchain |
-| **Firebase 12.x** | 13.0.0 is a brand-new major (7 Oct 2026) | not tested on purpose |
-| **Next ≥ 16.3.8** | 16.0.0–16.3.7 have a critical advisory | 16.3.8 passes audit for Next |
+| **Firebase 13.x** | 13.0.0 is a brand-new major (7 Oct 2026) | not tested on purpose |
+| **Next ≥ 16.4.0** | 16.0.0–16.3.7 have a critical advisory | 16.4.0 passes audit for Next |
 
 **Upgrading React and R3F together later (only if the owner asks):** R3F 9.8.x allows `react <19.4`, so
 React 19.3.x + R3F 9.8.x + drei 10.7.9 is the next safe pair. Do it in a scratch branch, run `npm run check`, test the landing page in a real browser.

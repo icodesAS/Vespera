@@ -25,7 +25,7 @@ Use this file when you see a red error. Find the error text in §3. If it is not
 ## 2. "Localhost is not opening": triage in order
 Run each step; stop at the first one that explains it. Copy the **first** red line of any error.
 
-1. **Wrong Node:** `node -v` must start with `v22`. Fix: `nvm use 22` (or install Node 22), then delete `node_modules` and run `npm install`.
+1. **Wrong Node:** `node -v` must start with `v22`. Fix: `nvm use 24` (or install Node 24), then delete `node_modules` and run `npm install`.
 2. **Not installed / partial install:** `npm install`. If it prints `ERESOLVE`, do **not** use `--force`: see §3.
 3. **Port busy:** error mentions `EADDRINUSE`/port 3000 → `npm run dev -- -p 3001` and open `http://localhost:3001`.
 4. **Env missing:** is there a `.env.local` with all five `NEXT_PUBLIC_FIREBASE_*` values? Restart `npm run dev` after editing it. (v1 crashed at import when these were missing or the old project was deleted; v2 shows a "Setup needed" panel instead.)
@@ -39,7 +39,7 @@ Run each step; stop at the first one that explains it. Copy the **first** red li
 | You see | It means | Fix |
 |---------|----------|-----|
 | `npm error ERESOLVE unable to resolve dependency tree` | two packages disagree about a version | read which pair is named; check doc 02 §3; **never** `--force`/`--legacy-peer-deps`; restore `package.json` from git |
-| `EBADENGINE` / "Unsupported engine" | wrong Node version | `nvm use 22` |
+| `EBADENGINE` / "Unsupported engine" | wrong Node version | `nvm use 24` |
 | `Firebase: Error (auth/unauthorized-domain)` | domain not allowed | Firebase → Authentication → Settings → Authorized domains → add it |
 | `Firebase: Error (auth/operation-not-allowed)` | login method disabled | enable it in console (Anonymous is a separate switch) |
 | `FirebaseError: Missing or insufficient permissions` | rules blocked it | are you logged in? right collection? use Rules Playground; compare with doc 03 §6 |

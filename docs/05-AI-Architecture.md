@@ -21,11 +21,11 @@ flowchart LR
 
 ## 2. SDK, models, keys
 - Package: **`@google/genai` 2.23.0**. Gemini **Developer API** with `GEMINI_API_KEY` (server only). **No Vertex AI, no service account.**
-- Model names come from env: `GEMINI_MODEL=gemini-3.5-flash` (main) and `GEMINI_FALLBACK_MODEL=gemini-3.5-flash-lite` (cheaper/faster).
+- Model names come from env: `GEMINI_MODEL=gemini-3.8-flash` (main) and `GEMINI_FALLBACK_MODEL=gemini-3.5-flash-lite` (cheaper/faster).
   Google retires models regularly (`gemini-2.5-flash` is being shut down; the Vertex date is 20 Oct 2026). Never hard-code a model name in code.
 - **Phase 0/5 check:** list what your key can use:
   `curl "https://generativelanguage.googleapis.com/v1beta/models?key=$GEMINI_API_KEY"`
-  (do not paste the key into chat or commits). If `gemini-3.5-flash` is missing, pick the nearest stable "flash" in the list and update `.env.local` + Vercel env.
+  (do not paste the key into chat or commits). If `gemini-3.8-flash` is missing, pick the nearest stable "flash" in the list and update `.env.local` + Vercel env.
 - Free-tier limits change often and are per project. Look at <https://aistudio.google.com/rate-limit>. Design for "429 Too Many Requests" as a normal event.
 - `lib/ai/client.ts` creates the client **lazily** inside `getAI()` and throws a clear error if the key is missing (so `next build` stays quiet).
 

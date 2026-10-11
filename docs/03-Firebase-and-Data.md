@@ -5,17 +5,17 @@ there is no old data to break. This file explains how to create the project (cli
 database looks like, the security rules that protect it, and the habits that keep it from breaking.
 
 ## 1. Create the new Firebase project (owner does this by hand, about 15 minutes)
-1. Open <https://console.firebase.google.com> with your Google account. (If you can still see the old PropSwipe project there, deleted
+1. Open <https://console.firebase.google.com> with your Google account. (If you can still see the old Vespera project there, deleted
    Google projects are usually recoverable only for about 30 days, so after 8 months make a new one.)
-2. **Add project** → name it `propswipe-v2` → turn **Google Analytics OFF** (not needed) → Create.
+2. **Add project** → name it `Vespera-v2` → turn **Google Analytics OFF** (not needed) → Create.
 3. **Build → Authentication → Get started.** Enable three providers: **Email/Password**, **Google**, **Anonymous** (this is the guest login).
 4. **Build → Firestore Database → Create database.** Choose **Production mode** (NOT test mode). Pick a region close to India:
    **asia-south1 (Mumbai)**. The region cannot be changed later.
-5. **Firestore → Rules** tab → paste the contents of `docs/assets/baseline/firestore.rules` → **Publish**.
+5. **Firestore → Rules** tab → paste the contents of `firestore.rules` from the repo root → **Publish**.
    Test with the **Rules Playground** (see §6).
-6. **Project settings (gear) → General → Your apps → Web (`</>`)** → register app `propswipe-web` (no hosting) → copy the config values.
+6. **Project settings (gear) → General → Your apps → Web (`</>`)** → register app `Vespera-web` (no hosting) → copy the config values.
 7. Copy `.env.example` to `.env.local` and fill the five `NEXT_PUBLIC_FIREBASE_*` values. Add `GEMINI_API_KEY` from <https://aistudio.google.com/apikey>.
-8. **Authentication → Settings → Authorized domains:** `localhost` is there already. After deploying, add your Vercel domain (e.g. `propswipe.vercel.app`).
+8. **Authentication → Settings → Authorized domains:** `localhost` is there already. After deploying, add your Vercel domain (e.g. `Vespera.vercel.app`).
 9. First time you sign in to the app, copy your **UID** from Authentication → Users. In Firestore, **create** collection `admins`, document id = **your UID**, one field `note: "owner"`. That makes you the admin (see doc 00 D-18).
 
 Never commit `.env.local`. Never create `service-account.json`.
