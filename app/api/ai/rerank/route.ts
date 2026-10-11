@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { Property } from "@/types/property";
-import { DEFAULT_MODEL, getGenAI } from "@/lib/ai";
+import { DEFAULT_MODEL, extractText, getGenAI } from "@/lib/ai";
 
 type RerankPayload = {
   liked?: Property[];
@@ -54,7 +54,7 @@ Output format example:
       },
     });
 
-    const raw = result.text?.()?.trim() || "[]";
+    const raw = extractText(result) || "[]";
 
     const reordered = reconcileOrder(raw, remaining);
 

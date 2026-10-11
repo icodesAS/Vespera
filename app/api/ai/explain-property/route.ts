@@ -2,7 +2,7 @@ export const runtime = "nodejs";
 
 import { NextRequest, NextResponse } from "next/server";
 import type { Property } from "@/types/property";
-import { DEFAULT_MODEL, getGenAI } from "@/lib/ai";
+import { DEFAULT_MODEL, extractText, getGenAI } from "@/lib/ai";
 
 const USER_PREFERENCES = `
 Budget: ₹25,000–₹40,000 per month
@@ -65,7 +65,7 @@ Provide a brief, friendly explanation (3-4 bullet points) about how well this pr
       });
 
       const aiExplanation =
-        result.text?.()?.trim() ||
+        extractText(result) ||
         generateFallbackExplanation(property, rent, bedrooms);
 
       return NextResponse.json({ aiReason: aiExplanation });

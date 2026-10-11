@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { Property } from "@/types/property";
-import { DEFAULT_MODEL, getGenAI } from "@/lib/ai";
+import { DEFAULT_MODEL, extractText, getGenAI } from "@/lib/ai";
 
 type SummaryPayload = {
   selected?: Property[];
@@ -43,7 +43,7 @@ Keep the tone friendly and concise (max ~120 words).
     });
 
     const summary =
-      result.text?.()?.trim() ||
+      extractText(result) ||
       "These look like great picks already!";
 
     return NextResponse.json({ summary });

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { Property } from "@/types/property";
-import { DEFAULT_MODEL, getGenAI } from "@/lib/ai";
+import { DEFAULT_MODEL, extractText, getGenAI } from "@/lib/ai";
 
 type SearchPayload = {
   query?: string;
@@ -68,7 +68,7 @@ Example response format:
 
     console.log("✅ Received response from Vertex AI");
 
-    const raw = result.text?.()?.trim() || "[]";
+    const raw = extractText(result) || "[]";
 
     console.log("📝 Raw AI response:", raw);
 

@@ -14,4 +14,10 @@ export function getGenAI() {
 
   return new GoogleGenAI({ apiKey });
 }
-
+export function extractText(result: unknown): string {
+  if (!result || typeof result !== "object") return "";
+  const r = result as { text?: string | (() => string) };
+  if (typeof r.text === "function") return r.text().trim();
+  if (typeof r.text === "string") return r.text.trim();
+  return "";
+}

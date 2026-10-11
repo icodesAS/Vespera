@@ -50,3 +50,5 @@ Format: `YYYY-MM-DD | phase | what changed | files | assumptions / new packages`
 - 2026-10-11 | planning | docs pack created, versions verified | docs/*, AGENTS.md | none
 - 2026-10-11 | docs | applied docs-patch-01 (motion tiers, working rules, phase split) | AGENTS.md, docs/00, 05, 06, 07 | none
 - 2026-10-11 | phase 1b | clean foundation: updated to Node 24.20.0, installed pinned dependencies, migrated framer-motion to motion/react, simplified lib/ai.ts to Gemini API key only, hardened lib/firebase.ts & useAuth.tsx, fixed lint & build, npm run check passed | package.json, lib/ai.ts, lib/firebase.ts, hooks/useAuth.tsx, store/usePropertyStore.ts, components/*, app/*, next.config.ts | none
+- 2026-10-11 | phase 1b | firebase setup: resolved client-side API key typo (FO54 vs F054), verified Firebase Auth login/register, Firestore liking & user doc creation, Gemini AI assessment (gemini-3.8-flash), npm run check passed | .env.local, .gitignore, docs/00-Decisions-Log.md | none
+
