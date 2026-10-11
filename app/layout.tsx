@@ -15,7 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "PropSwipe - Find Your Perfect Rental",
-  description: "Tinder-style property browsing with AI-powered recommendations",
+  description:
+    "AI-powered rental discovery platform for Indian metros with swipe-based shortlisting and Gemini match intelligence.",
 };
 
 export default function RootLayout({

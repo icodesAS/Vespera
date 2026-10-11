@@ -1,6 +1,6 @@
 # AGENTS.md — PropSwipe (read this first, every chat)
 
-PropSwipe is a "Tinder for rentals" app for Indian cities: swipe right to shortlist, swipe left to skip,
+PropSwipe is an AI-powered rental discovery platform for Indian cities: swipe right to shortlist, swipe left to skip,
 with Gemini AI for search, explanations, ranking and a chat copilot. We are UPGRADING an existing app.
 We are not rewriting it. Never break login, the database, or the API routes.
 
