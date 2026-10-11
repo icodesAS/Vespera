@@ -95,6 +95,10 @@ export const usePropertyStore = create<PropertyStore>((set) => ({
   loadPropertiesFromFirestore: async () => {
     set({ isLoadingProperties: true });
     try {
+      if (!db) {
+        set({ isLoadingProperties: false });
+        return;
+      }
       const q = query(collection(db, "properties"));
       const querySnapshot = await getDocs(q);
       const firestoreProperties: Property[] = [];

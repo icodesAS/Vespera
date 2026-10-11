@@ -1,31 +1,17 @@
 import { GoogleGenAI } from "@google/genai";
 
+export const DEFAULT_MODEL =
+  process.env.GEMINI_MODEL ||
+  process.env.GEMINI_FALLBACK_MODEL ||
+  "gemini-3.8-flash";
+
 export function getGenAI() {
-  const useVertex = process.env.GOOGLE_GENAI_USE_VERTEXAI === "true";
-  const apiKey = process.env.GOOGLE_API_KEY ?? process.env.GEMINI_API_KEY;
-  const project = process.env.GOOGLE_CLOUD_PROJECT;
-  const location = process.env.GOOGLE_CLOUD_LOCATION;
-
-  if (useVertex) {
-    if (!project || !location) {
-      throw new Error(
-        "Vertex AI requires GOOGLE_CLOUD_PROJECT and GOOGLE_CLOUD_LOCATION."
-      );
-    }
-
-    return new GoogleGenAI({
-      vertexai: true,
-      project,
-      location,
-    });
-  }
+  const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
-    throw new Error("Missing GOOGLE_API_KEY or GEMINI_API_KEY.");
+    throw new Error("Missing GEMINI_API_KEY environment variable.");
   }
 
   return new GoogleGenAI({ apiKey });
 }
-
-export const DEFAULT_MODEL = "gemini-2.5-flash";
 

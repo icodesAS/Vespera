@@ -1,7 +1,7 @@
 "use client";
 
 import type { Property } from "@/types/property";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 interface LikedPropertiesPanelProps {
   likedProperties: Property[];

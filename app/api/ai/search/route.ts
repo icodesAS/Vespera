@@ -68,10 +68,7 @@ Example response format:
 
     console.log("✅ Received response from Vertex AI");
 
-    const raw =
-      result.response?.text?.trim?.() ||
-      result.text?.trim?.() ||
-      "[]";
+    const raw = result.text?.()?.trim() || "[]";
 
     console.log("📝 Raw AI response:", raw);
 

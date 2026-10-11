@@ -51,9 +51,10 @@ export default function HomePage() {
   // Load user data from Firestore on mount
   useEffect(() => {
     if (user && db) {
+      const firestore = db;
       const loadUserData = async () => {
         try {
-          const userDoc = await getDoc(doc(db, "users", user.uid));
+          const userDoc = await getDoc(doc(firestore, "users", user.uid));
           if (userDoc.exists()) {
             const data = userDoc.data();
             if (data.likedPropertyIds) {

@@ -1,8 +1,6 @@
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-
-let app: FirebaseApp | undefined;
+import { getAuth, type Auth } from "firebase/auth";
+import { getFirestore, type Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -17,25 +15,32 @@ const requiredKeys: (keyof typeof firebaseConfig)[] = [
   "apiKey",
   "authDomain",
   "projectId",
+  "storageBucket",
+  "messagingSenderId",
   "appId",
 ];
 
-const missingKeys = requiredKeys.filter((key) => !firebaseConfig[key]);
+export const missingFirebaseKeys = requiredKeys.filter(
+  (key) => !firebaseConfig[key]
+);
 
-if (missingKeys.length > 0) {
-  throw new Error(
-    `[Firebase] Missing required config values: ${missingKeys.join(", ")}`
-  );
-}
+export const isFirebaseConfigured = missingFirebaseKeys.length === 0;
 
-if (getApps().length === 0) {
-  app = initializeApp(firebaseConfig);
+let app: FirebaseApp | undefined;
+let authInstance: Auth | undefined;
+let dbInstance: Firestore | undefined;
+
+if (isFirebaseConfigured) {
+  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+  authInstance = getAuth(app);
+  dbInstance = getFirestore(app);
 } else {
-  app = getApps()[0];
+  if (typeof window !== "undefined") {
+    console.warn(
+      `[Firebase] Missing configuration keys: ${missingFirebaseKeys.join(", ")}. Please configure them in .env.local`
+    );
+  }
 }
-
-const authInstance = getAuth(app);
-const dbInstance = getFirestore(app);
 
 export const auth = authInstance;
 export const db = dbInstance;

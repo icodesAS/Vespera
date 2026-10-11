@@ -45,20 +45,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        // Ensure user document exists in Firestore
-        const userDocRef = doc(db!, "users", firebaseUser.uid);
-        const userDoc = await getDoc(userDocRef);
+      if (firebaseUser && db) {
+        try {
+          // Ensure user document exists in Firestore
+          const userDocRef = doc(db, "users", firebaseUser.uid);
+          const userDoc = await getDoc(userDocRef);
 
-        if (!userDoc.exists()) {
-          await setDoc(userDocRef, {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            displayName: firebaseUser.displayName || null,
-            createdAt: serverTimestamp(),
-            likedPropertyIds: [],
-            lastAiPreferenceText: null,
-          });
+          if (!userDoc.exists()) {
+            await setDoc(userDocRef, {
+              uid: firebaseUser.uid,
+              email: firebaseUser.email,
+              displayName: firebaseUser.displayName || null,
+              createdAt: serverTimestamp(),
+              likedPropertyIds: [],
+              lastAiPreferenceText: null,
+            });
+          }
+        } catch (err) {
+          console.error("Failed to sync user document:", err);
         }
       }
       setUser(firebaseUser);

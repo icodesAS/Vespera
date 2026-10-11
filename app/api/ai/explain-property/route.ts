@@ -65,8 +65,7 @@ Provide a brief, friendly explanation (3-4 bullet points) about how well this pr
       });
 
       const aiExplanation =
-        result.response?.text?.trim?.() ||
-        result.text?.trim?.() ||
+        result.text?.()?.trim() ||
         generateFallbackExplanation(property, rent, bedrooms);
 
       return NextResponse.json({ aiReason: aiExplanation });

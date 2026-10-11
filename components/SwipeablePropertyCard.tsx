@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, type PanInfo } from "framer-motion";
+import { motion, type PanInfo } from "motion/react";
 import PropertyCard from "./PropertyCard";
 import type { Property } from "@/types/property";
 import { useState } from "react";

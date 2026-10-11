@@ -43,8 +43,7 @@ Keep the tone friendly and concise (max ~120 words).
     });
 
     const summary =
-      result.response?.text?.trim?.() ||
-      result.text?.trim?.() ||
+      result.text?.()?.trim() ||
       "These look like great picks already!";
 
     return NextResponse.json({ summary });

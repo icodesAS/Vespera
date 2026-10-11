@@ -3,8 +3,16 @@
 import { useState } from "react";
 import { collection, addDoc, query, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import type { Property } from "@/types/property";
+
+function createPropertyId(): string {
+  return `prop-${Date.now()}`;
+}
+
+function getCurrentTimestamp(): string {
+  return new Date().toISOString();
+}
 
 export default function AdminPanel() {
   const [formData, setFormData] = useState<Partial<Property>>({
@@ -42,12 +50,15 @@ export default function AdminPanel() {
     setLoading(true);
 
     try {
+      if (!db) {
+        throw new Error("Database is not configured. Check .env.local");
+      }
       if (!formData.title || !formData.city || !formData.imageUrl) {
         throw new Error("Please fill in all required fields (Title, City, Image URL)");
       }
 
       const propertyData = {
-        id: `prop-${Date.now()}`,
+        id: createPropertyId(),
         title: formData.title,
         price: formData.price || 0,
         rent: formData.rent || 0,
@@ -57,7 +68,7 @@ export default function AdminPanel() {
         bathrooms: formData.bathrooms || 2,
         areaSqFt: formData.areaSqFt || 1000,
         imageUrl: formData.imageUrl,
-        createdAt: new Date().toISOString(),
+        createdAt: getCurrentTimestamp(),
       };
 
       const docRef = await addDoc(collection(db, "properties"), propertyData);
@@ -87,6 +98,10 @@ export default function AdminPanel() {
 
   const loadProperties = async () => {
     try {
+      if (!db) {
+        setError("Database is not configured.");
+        return;
+      }
       setLoading(true);
       const q = query(collection(db, "properties"));
       const querySnapshot = await getDocs(q);

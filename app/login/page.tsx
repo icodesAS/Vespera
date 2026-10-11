@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 export default function LoginPage() {
   const [isRegister, setIsRegister] = useState(false);

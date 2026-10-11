@@ -54,10 +54,7 @@ Output format example:
       },
     });
 
-    const raw =
-      result.response?.text?.trim?.() ||
-      result.text?.trim?.() ||
-      "[]";
+    const raw = result.text?.()?.trim() || "[]";
 
     const reordered = reconcileOrder(raw, remaining);
 
